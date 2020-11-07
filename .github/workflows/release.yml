@@ -1,0 +1,193 @@
+name: Everything
+
+on:
+  push:
+    branches: [ '*' ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  validate_new_version:
+    name: Validate new version
+    runs-on: ubuntu-latest
+    outputs:
+      planned_version: ${{ steps.planned_version.outputs.planned_version }}
+      tag_hash: ${{ steps.lookup_tag.outputs.tag_hash }}
+      can_create: ${{ steps.can_create.outputs.can_create }}
+      tag_exists: ${{ steps.can_create.outputs.tag_exists }}
+      branch_name: ${{ steps.get_branch_name.outputs.branch_name }}
+      job_status: ${{ job.status }}
+
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Get trigger branch name
+        id: get_branch_name
+        shell: bash
+        run: |
+          echo "::set-output name=branch_name::${GITHUB_REF#refs/heads/}"
+
+      - name: Check if .version file exists
+        id: version_file_exists
+        run: |
+          if [[ -f .version ]]; then 
+            echo "::set-output name=version_file_exists::true"
+          else 
+            echo "::set-output name=version_file_exists::false" 
+          fi
+
+      - name: Read out .version file
+        if: steps.version_file_exists.outputs.version_file_exists == 'true'
+        id: planned_version
+        run: echo "::set-output name=planned_version::$(cat .version)"
+
+      - name: Display planned version
+        id: display_planned_version
+        run: |
+          echo "::debug::Planned version: ${{steps.planned_version.outputs.planned_version}}"
+
+      - name: Lookup planned tag
+        id: lookup_tag
+        run: |
+          URL="https://api.github.com/repos/${{github.repository}}/git/refs/tags/${{steps.planned_version.outputs.planned_version}}"
+          OUTFILE=".tag_hash"
+          curl -s -X GET -H 'authorization: Bearer ${{secrets.GITHUB_TOKEN}}' --url "${URL}" | jq .object.sha | tee "${OUTFILE}"
+          echo "::set-output name=tag_hash::$(cat "${OUTFILE}")"
+      
+      - name: Define if can create a new version
+        id: can_create
+        if: steps.lookup_tag.outputs.tag_hash == 'null'
+        run: |
+          echo "::set-output name=tag_exists::false"
+          echo "::set-output name=can_create::true"
+
+      - name: Fail on pull request if version already exists
+        id: fail_on_master
+        if: >
+          github.event_name == 'pull_request' && 
+          steps.can_create.outputs.can_create != 'true'
+        run: exit 2
+
+  release:
+    name: Build, Test, Packages
+    runs-on: ubuntu-latest
+
+    outputs:
+      job_status: ${{ job.status }}
+   
+    needs: 
+      - validate_new_version
+
+    if: >
+      github.event_name == 'push'
+
+    env:
+      PLANNED_VERSION: ${{ needs.validate_new_version.outputs.planned_version }}
+
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        id: generate_changelog
+        shell: bash
+        run: |
+          described=$(git describe --tags || git rev-list --max-parents=0 HEAD)
+          described_parts=( ${described//-/ } )
+          current_tag=${described_parts[0]}
+          
+          changelog_filename=".changelog"
+          release_changelog_filename=".release_changelog"
+          echo "current_tag=${current_tag}"
+
+          echo "Listing current changes..."
+          git log --pretty=oneline --format='%w(1000)* %cd %an <%ae>%n%w(60,0,2)- %s%n' --date="format:%a %b %d %Y" "$current_tag"..HEAD | tee "${changelog_filename}"
+          git log --pretty=oneline --format='%w(1000)**%cd %an <%ae>**%n%w(60,0,2)- %s%n' --date="format:%a %b %d %Y" "$current_tag"..HEAD | tee "${release_changelog_filename}"
+          
+          echo "Changelog file..."
+          cat .changelog
+
+          echo "Preparing a GitHub Release Changelog"
+          cat << EOF > "${release_changelog_filename}"
+          Automatically generated release with assets.
+
+          Changelog:
+          $(cat "${release_changelog_filename}")
+          EOF
+
+          echo "::set-output name=changelog_filename::${changelog_filename}"
+          echo "::set-output name=release_changelog_filename::${release_changelog_filename}"
+
+      - name: Display changelog
+        run: echo "${{ steps.generate_changelog.outputs.changelog }}"
+
+      - name: Create a new tag
+        if: >
+          needs.validate_new_version.outputs.can_create == 'true' &&
+          needs.validate_new_version.outputs.branch_name == 'master' &&
+          github.event_name == 'push'
+        run: |
+          curl --request POST --url https://api.github.com/repos/${{ github.repository }}/git/tags \
+          -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          -H 'content-type: application/json' \
+          --data '{"tag": "${env.PLANNED_VERSION}",
+            "message": "Pipeline build tag",
+            "object": "${{ github.sha }}",
+            "type": "commit",
+            "tagger": {
+              "name": "Alice from Wonderland",
+              "email": "noreply@localhost.localdomain",
+              "date": "${{steps.timestamp.outputs.timestamp}}"
+            }'
+
+      - name: Create a Release
+        id: create_release
+        if: >
+          needs.validate_new_version.outputs.can_create == 'true' &&
+          needs.validate_new_version.outputs.branch_name == 'master' &&
+          github.event_name == 'push'
+        uses: actions/create-release@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{env.PLANNED_VERSION}}
+          release_name: v${{env.PLANNED_VERSION}}
+          body_path: ${{steps.generate_changelog.outputs.release_changelog_filename}}
+          draft: false
+          prerelease: false
+
+      - name: Upload a Release Asset (mikrotik_interface_traffic_usage.rsc)
+        if: >
+          needs.validate_new_version.outputs.can_create == 'true' &&
+          needs.validate_new_version.outputs.branch_name == 'master' &&
+          github.event_name == 'push'
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./interface_traffic_usage/mikrotik_interface_traffic_usage.rsc
+          asset_name: mikrotik_interface_traffic_usage.rsc
+          asset_content_type: application/octet-stream
+
+      - name: Upload a Release Asset (mikrotik_interface_traffic_usage.rsc)
+        if: >
+          needs.validate_new_version.outputs.can_create == 'true' &&
+          needs.validate_new_version.outputs.branch_name == 'master' &&
+          github.event_name == 'push'
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./health_exporter/mikrotik_health_exporter.rsc
+          asset_name: mikrotik_health_exporter.rsc
+          asset_content_type: application/octet-stream

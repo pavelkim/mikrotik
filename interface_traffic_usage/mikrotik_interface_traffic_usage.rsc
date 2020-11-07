@@ -1,7 +1,7 @@
 #
 # Interface Traffic Usage 
 #
-# v1.0 2017-04-18 Script works with Ethernet Interfaces' comments. Resets counters. 
+# v1.0.0 2017-04-18 Script works with Ethernet Interfaces' comments. Resets counters. 
 #
 
 :local currentItemComment
