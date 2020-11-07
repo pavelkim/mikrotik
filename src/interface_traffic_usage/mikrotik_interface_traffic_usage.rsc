@@ -19,6 +19,7 @@
 :local posDataDelimiter
 :local posCommentEnd 
 
+:local version dev
 :local scriptRunDatetime
 
 :global removeSpaces do={
@@ -46,7 +47,7 @@
 
 }
 
-:log info message=" *** Interface Traffic Usage START ***"
+:log info message=" *** Interface Traffic Usage v.$version START ***"
 :set scriptRunDatetime ( [:tostr [/system clock get date]] . " " . [:tostr [/system clock get time]] )
 
 :foreach itemID in=[/interface ethernet find comment~"\\{traffic:.*\\}"] do={
