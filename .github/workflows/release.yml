@@ -74,7 +74,7 @@ jobs:
         run: exit 2
 
   release:
-    name: Build, Test, Packages
+    name: Build, Release
     runs-on: ubuntu-latest
 
     outputs:
@@ -95,6 +95,10 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+
+      - name: Build
+        id: make_build
+        run: make build
 
       - name: Generate changelog
         id: generate_changelog
