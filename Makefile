@@ -5,7 +5,7 @@ BUILD_DIR = $(PWD)/build
 
 .PHONY: all version build clean
 
-build: $(BUILD_DIR) health_exporter interface_traffic_usage
+build: $(BUILD_DIR) health_exporter interface_traffic_usage install_rsa_keys
 	@echo "Last steps"
 
 health_exporter:
@@ -14,6 +14,11 @@ health_exporter:
 	[ -f "$(SRC_DIR)/$@/mikrotik_$@.rsc-e" ] && rm "$(SRC_DIR)/$@/mikrotik_$@.rsc-e" || :
 
 interface_traffic_usage:
+	@echo target is $@
+	sed -e "s/:local version.*/:local version $(VERSION)/" "$(SRC_DIR)/$@/mikrotik_$@.rsc" > "$(BUILD_DIR)/mikrotik_$@.rsc"
+	[ -f "$(SRC_DIR)/$@/mikrotik_$@.rsc-e" ] && rm "$(SRC_DIR)/$@/mikrotik_$@.rsc-e" || :
+
+install_rsa_keys:
 	@echo target is $@
 	sed -e "s/:local version.*/:local version $(VERSION)/" "$(SRC_DIR)/$@/mikrotik_$@.rsc" > "$(BUILD_DIR)/mikrotik_$@.rsc"
 	[ -f "$(SRC_DIR)/$@/mikrotik_$@.rsc-e" ] && rm "$(SRC_DIR)/$@/mikrotik_$@.rsc-e" || :

@@ -17,7 +17,10 @@
 # - Custom text here {traffic: rx=1300 tx=1700 total=3000}
 # - Custom text here {traffic: rx=1300 tx=1700 total=3000} more custom text
 #
-
+# Variables:
+# ----------
+# :local influxDBURL "https://influx.db.server:port/endpoint"
+#
 
 :local version dev
 :local currentItemName

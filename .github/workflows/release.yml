@@ -176,7 +176,7 @@ jobs:
           asset_name: mikrotik_interface_traffic_usage.rsc
           asset_content_type: application/octet-stream
 
-      - name: Upload a Release Asset (mikrotik_interface_traffic_usage.rsc)
+      - name: Upload a Release Asset (mikrotik_health_exporter.rsc)
         if: >
           needs.validate_new_version.outputs.can_create == 'true' &&
           needs.validate_new_version.outputs.branch_name == 'master' &&
@@ -188,4 +188,18 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./build/mikrotik_health_exporter.rsc
           asset_name: mikrotik_health_exporter.rsc
+          asset_content_type: application/octet-stream
+
+      - name: Upload a Release Asset (mikrotik_install_rsa_keys.rsc)
+        if: >
+          needs.validate_new_version.outputs.can_create == 'true' &&
+          needs.validate_new_version.outputs.branch_name == 'master' &&
+          github.event_name == 'push'
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/mikrotik_install_rsa_keys.rsc
+          asset_name: mikrotik_install_rsa_keys.rsc
           asset_content_type: application/octet-stream
