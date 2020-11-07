@@ -108,17 +108,12 @@ jobs:
           described_parts=( ${described//-/ } )
           current_tag=${described_parts[0]}
           
-          changelog_filename=".changelog"
           release_changelog_filename=".release_changelog"
           echo "current_tag=${current_tag}"
 
           echo "Listing current changes..."
-          git log --pretty=oneline --format='%w(1000)* %cd %an <%ae>%n%w(60,0,2)- %s%n' --date="format:%a %b %d %Y" "$current_tag"..HEAD | tee "${changelog_filename}"
           git log --pretty=oneline --format='%w(1000)**%cd %an <%ae>**%n%w(60,0,2)- %s%n' --date="format:%a %b %d %Y" "$current_tag"..HEAD | tee "${release_changelog_filename}"
           
-          echo "Changelog file..."
-          cat .changelog
-
           echo "Preparing a GitHub Release Changelog"
           cat << EOF > "${release_changelog_filename}"
           Automatically generated release with assets.
@@ -127,7 +122,6 @@ jobs:
           $(cat "${release_changelog_filename}")
           EOF
 
-          echo "::set-output name=changelog_filename::${changelog_filename}"
           echo "::set-output name=release_changelog_filename::${release_changelog_filename}"
 
       - name: Display changelog
