@@ -14,7 +14,7 @@
 #
 
 
-:local version dev
+:local version DEV
 :local scriptRunDatetime
 :local deviceIdentity
 :local deviceTemperature
@@ -30,7 +30,7 @@
 :local postRequestPayloadParts ({})
 :local postRequestPayload
 
-:log info message=" *** Health Monitoring v.$version START ***"
+:log info message=" *** Health Monitoring v$version START ***"
 
 :if ([:tostr [:typeof $influxDBURL ]] = "nothing" ) do={
 	:error "Error: can't read out variable \$influxDBURL. InfluxDB URL not set, exiting."

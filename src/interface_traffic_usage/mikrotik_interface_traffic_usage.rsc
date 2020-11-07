@@ -8,7 +8,7 @@
 # /system scheduler add interval=5m name=interface_traffic_usage on-event=":global influxDBURL $influxDBURL; /import scripts/mikrotik_interface_traffic_usage.rsc" policy=read,write,policy,test start-time=startup
 #
 # Comment payload example:
-# - {traffic=null}
+# - {traffic:null}
 # - {traffic: rx=1300 tx=1700 total=3000}
 # - Custom text here {traffic: rx=1300 tx=1700 total=3000}
 # - Custom text here {traffic: rx=1300 tx=1700 total=3000} more custom text

@@ -20,9 +20,9 @@
 }
 :local keyFilePath
 :local keyFileID 0
-:local version dev
+:local version DEV
 
-:log info message="Start importing RSA Keys (v.$version)."
+:log info message="Start importing RSA Keys (v$version)."
 
 foreach accountName,keyURLList in=$keys do={
 	:log info message="Processing keys for account '$accountName'"
