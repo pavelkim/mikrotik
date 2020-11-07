@@ -14,6 +14,8 @@
 #
 
 
+:global influxDBURL
+
 :local version DEV
 :local scriptRunDatetime
 :local deviceIdentity

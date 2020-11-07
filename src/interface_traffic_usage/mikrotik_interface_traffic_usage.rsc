@@ -18,6 +18,9 @@
 # :local influxDBURL "https://influx.db.server:port/endpoint"
 #
 
+
+:global influxDBURL
+
 :local version DEV
 :local currentItemName
 :local currentItemComment
