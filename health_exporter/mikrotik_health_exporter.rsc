@@ -9,9 +9,10 @@
 #
 # Usage example:
 # --------------
-# /tool fetch url="https://github.com/pavelkim/mikrotik/releases/latest/mikrotik_health_exporter.rsc" dst-path="scripts/mikrotik_health_exporter.rsc"
+# /tool fetch url="https://github.com/pavelkim/mikrotik/releases/latest/download/mikrotik_health_exporter.rsc" dst-path="scripts/mikrotik_health_exporter.rsc"
 # /import scripts/mikrotik_health_exporter.rsc
-# :global influxDBURL ""; /system scheduler add interval=1m name=mikrotik_health_exporter on-event=":global influxDBURL $influxDBURL; /import scripts/mikrotik_health_exporter.rsc" policy=read,test start-time=startup
+# :global influxDBURL ""
+# /system scheduler add interval=1m name=mikrotik_health_exporter on-event=":global influxDBURL $influxDBURL; /import scripts/mikrotik_health_exporter.rsc" policy=read,test start-time=startup
 #
 # Variables:
 # ----------
