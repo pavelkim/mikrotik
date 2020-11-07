@@ -174,7 +174,7 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./interface_traffic_usage/mikrotik_interface_traffic_usage.rsc
+          asset_path: ./build/mikrotik_interface_traffic_usage.rsc
           asset_name: mikrotik_interface_traffic_usage.rsc
           asset_content_type: application/octet-stream
 
@@ -188,6 +188,6 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./health_exporter/mikrotik_health_exporter.rsc
+          asset_path: ./build/mikrotik_health_exporter.rsc
           asset_name: mikrotik_health_exporter.rsc
           asset_content_type: application/octet-stream

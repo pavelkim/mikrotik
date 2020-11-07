@@ -20,7 +20,7 @@
 #
 
 
-:local version "dev"
+:local version dev
 :local scriptRunDatetime
 :local deviceIdentity
 :local deviceTemperature
