@@ -18,7 +18,7 @@
 # :local influxDBURL "https://influx.db.server:port/endpoint"
 #
 
-:local version dev
+:local version DEV
 :local currentItemName
 :local currentItemComment
 :local currentItemCommentBeforeData
@@ -80,7 +80,7 @@
 
 }
 
-:log info message=" *** Interface Traffic Usage v.$version START ***"
+:log info message=" *** Interface Traffic Usage v$version START ***"
 :set scriptRunDatetime ( [:tostr [/system clock get date]] . " " . [:tostr [/system clock get time]] )
 :set deviceIdentity ( [/system identity get name] )
 
