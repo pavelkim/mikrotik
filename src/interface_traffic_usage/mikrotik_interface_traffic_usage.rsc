@@ -1,10 +1,6 @@
 #
 # Interface Traffic Usage 
 #
-# v1.0.0 2017-04-18 Script works with Ethernet Interfaces' comments. Resets counters. (Pavel Kim)
-# v1.0.1 2020-11-01 Now runs on all interfaces. Doesn't reset counters. (Pavel Kim)
-# v2.0.0 2020-11-01 Better comment payload. Pushing data to TSDB. (Pavel Kim)
-#
 # Usage example:
 # /tool fetch url="https://github.com/pavelkim/mikrotik/releases/latest/download/mikrotik_interface_traffic_usage.rsc" dst-path="scripts/mikrotik_interface_traffic_usage.rsc"
 # /import scripts/mikrotik_interface_traffic_usage.rsc
@@ -87,6 +83,10 @@
 :log info message=" *** Interface Traffic Usage v.$version START ***"
 :set scriptRunDatetime ( [:tostr [/system clock get date]] . " " . [:tostr [/system clock get time]] )
 :set deviceIdentity ( [/system identity get name] )
+
+:if ([:tostr [:typeof $influxDBURL ]] = "nothing" ) do={
+	:error "Error: can't read out variable \$influxDBURL. InfluxDB URL not set, exiting."
+}
 
 :foreach itemID in=[/interface find comment~"\\{traffic:.*\\}"] do={
 	:log info message="ITU: processing item $itemID"

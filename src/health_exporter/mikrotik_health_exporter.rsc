@@ -1,13 +1,6 @@
 #
 # Health Monitoring
 #
-# v1.0.0 2020-11-06 Initial version. (Pavel Kim)
-# v1.1.0 2020-11-07 Better TSDB write request payload rendering. (Pavel Kim)
-# v1.1.1 2020-11-07 Not rendering TSDB write item for empty values. (Pavel Kim)
-# v1.1.2 2020-11-07 Platform name tag dropped. (Pavel Kim)
-# v1.1.3 2020-11-07 Acquiring InfluxDB URL from the environment. (Pavel Kim)
-# v2.0.0 2020-11-07 Version sync across the repo. (Pavel Kim)
-#
 # Usage example:
 # --------------
 # /tool fetch url="https://github.com/pavelkim/mikrotik/releases/latest/download/mikrotik_health_exporter.rsc" dst-path="scripts/mikrotik_health_exporter.rsc"

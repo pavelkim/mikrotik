@@ -1,17 +1,8 @@
 #
-# Install SSH Public Keys 
-#
-# v1.0.0 2017-12-23 Basic functions (Pavel Kim)
-# v1.0.1 2017-12-23 Catching error now (Pavel Kim)
-# v1.0.2 2017-12-23 Fixed bug with fetch goes in other thread or something (Pavel Kim)
-# v1.0.3 2020-03-10 Updated key paths (Pavel Kim)
-# v1.0.4 2020-10-31 Updated key paths (Pavel Kim)
-# v2.0.0 2020-11-07 Versioning changed. (Pavel Kim)
-#
+# Install SSH Public Keys
 #
 # It just adds public keys for a user. Duplicates possible.
 # User should be created before running this script.
-# 
 #
 # Usage example:
 # /tool fetch url="https://github.com/pavelkim/mikrotik/releases/latest/download/mikrotik_install_rsa_keys.rsc" dst-path="scripts/mikrotik_install_rsa_keys.rsc"
