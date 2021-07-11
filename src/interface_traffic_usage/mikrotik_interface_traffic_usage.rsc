@@ -96,7 +96,7 @@
 
 	:set currentItemComment [ /interface get $itemID comment ]
 	:set currentItemName [ /interface get $itemID name ]
-	:log info message="ITU: Item: $itemID, Comment: '$currentItemComment'"
+	:log info message="ITU: Item: $itemID, Name: '$currentItemName', Comment: '$currentItemComment'"
 
 	:if ([:find $currentItemComment ":"] != "") do={
 		:log info message="ITU: Item: $itemID Delimiter found, hope syntax is correct"
