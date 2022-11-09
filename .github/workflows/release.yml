@@ -1,3 +1,4 @@
+---
 name: Everything
 
 on:
@@ -35,10 +36,10 @@ jobs:
       - name: Check if .version file exists
         id: version_file_exists
         run: |
-          if [[ -f .version ]]; then 
+          if [[ -f .version ]]; then
             echo "::set-output name=version_file_exists::true"
-          else 
-            echo "::set-output name=version_file_exists::false" 
+          else
+            echo "::set-output name=version_file_exists::false"
           fi
 
       - name: Read out .version file
@@ -58,7 +59,7 @@ jobs:
           OUTFILE=".tag_hash"
           curl -s -X GET -H 'authorization: Bearer ${{secrets.GITHUB_TOKEN}}' --url "${URL}" | jq .object.sha | tee "${OUTFILE}"
           echo "::set-output name=tag_hash::$(cat "${OUTFILE}")"
-      
+
       - name: Define if can create a new version
         id: can_create
         if: steps.lookup_tag.outputs.tag_hash == 'null'
@@ -69,7 +70,7 @@ jobs:
       - name: Fail on pull request if version already exists
         id: fail_on_master
         if: >
-          github.event_name == 'pull_request' && 
+          github.event_name == 'pull_request' &&
           steps.can_create.outputs.can_create != 'true'
         run: exit 2
 
@@ -79,8 +80,8 @@ jobs:
 
     outputs:
       job_status: ${{ job.status }}
-   
-    needs: 
+
+    needs:
       - validate_new_version
 
     if: >
@@ -107,13 +108,13 @@ jobs:
           described=$(git describe --tags || git rev-list --max-parents=0 HEAD)
           described_parts=( ${described//-/ } )
           current_tag=${described_parts[0]}
-          
+
           release_changelog_filename=".release_changelog"
           echo "current_tag=${current_tag}"
 
           echo "Listing current changes..."
           git log --pretty=oneline --format='%w(200,0,2)- %s (%an <%ae>)' --date="format:%a %b %d %Y" "$current_tag"..HEAD | sort | tee "${release_changelog_filename}"
-          
+
           echo "Preparing a GitHub Release Changelog"
           cat << EOF > "${release_changelog_filename}"
           Automatically generated release with assets.
@@ -154,7 +155,7 @@ jobs:
           github.event_name == 'push'
         uses: actions/create-release@v1
         env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{env.PLANNED_VERSION}}
           release_name: v${{env.PLANNED_VERSION}}
@@ -169,7 +170,7 @@ jobs:
           github.event_name == 'push'
         uses: actions/upload-release-asset@v1.0.2
         env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./build/mikrotik_interface_traffic_usage.rsc
@@ -183,7 +184,7 @@ jobs:
           github.event_name == 'push'
         uses: actions/upload-release-asset@v1.0.2
         env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./build/mikrotik_health_exporter.rsc
@@ -197,9 +198,11 @@ jobs:
           github.event_name == 'push'
         uses: actions/upload-release-asset@v1.0.2
         env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./build/mikrotik_install_rsa_keys.rsc
           asset_name: mikrotik_install_rsa_keys.rsc
           asset_content_type: application/octet-stream
+
+...
