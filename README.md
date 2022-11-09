@@ -2,18 +2,10 @@
 
 ## Mikrotik Interface Traffic Usage
 
-Counts rx, tx and total transferred bytes on network interfaces. Stores results in interface's comment and pushes them to InfluxDB.
+Counts rx, tx and total transferred bytes on network interfaces and pushes metrics into InfluxDB.
+The script stores the last taken mesurements in files named "$resultsFilenameBase_$interfaceName"
 
 ### Installation
-
-#### Initialise interface comment metadata
-
-You can use WebFig, Winbox or other way to modify the comment. We use CLI:
-
-```bash
-/interface ethernet set ether1 comment="{traffic:null}"
-/interface wireless set wlan2 comment="{traffic:null}"
-```
 
 #### Download the script
 
@@ -21,7 +13,7 @@ You can use WebFig, Winbox or other way to modify the comment. We use CLI:
 /tool fetch url="https://github.com/pavelkim/mikrotik/releases/latest/download/mikrotik_interface_traffic_usage.rsc" dst-path="scripts/mikrotik_interface_traffic_usage.rsc"
 ```
 
-#### Set InfluxDB URL
+#### Set your InfluxDB write URL
 
 ```bash
 :global influxDBURL "https://www.myinfluxdb.local/write"
@@ -29,11 +21,10 @@ You can use WebFig, Winbox or other way to modify the comment. We use CLI:
 
 #### Configure system scheduler
 
+Add the actual schedule:
 ```bash
 /system scheduler add interval=5m name=interface_traffic_usage on-event=":global influxDBURL $influxDBURL; /import scripts/mikrotik_interface_traffic_usage.rsc" policy=read,write,test start-time=startup
 ```
-
-#### Validate results
 
 Check the scheduler:
 ```bash 
@@ -41,19 +32,9 @@ Check the scheduler:
 :put [ /system scheduler get interface_traffic_usage run-count ]
 ```
 
-Check the interface comment:
-```bash
-:put [/interface ethernet get ether1 comment ]
-:put [/interface ethernet get wlan2 comment ]
-```
-
 ### Example
 
 ```bash
-[pavelkim@rb-rtcomm0] > /interface ethernet set ether1 comment="{traffic:null}"
-
-[pavelkim@rb-rtcomm0] > :put [/interface ethernet get ether1 comment]
-{traffic:null}
 
 [pavelkim@rb-rtcomm0] > /tool fetch url="https://github.com/pavelkim/mikrotik/releases/latest/download/mikrotik_interface_traffic_usage.rsc" dst-path="scripts/mikrotik_interface_traffic_usage.rsc"
       status: finished
@@ -78,9 +59,6 @@ Flags: X - disabled
 
 [pavelkim@rb-rtcomm0] > :put [ /system scheduler get interface_traffic_usage run-count ]
 2
-
-[pavelkim@rb-rtcomm0] > :put [/interface ethernet get ether1 comment]
-{traffic:rx=265624729 tx=2604177885 total=2869802614}
 ```
 
 ## Mikrotik Health Exporter

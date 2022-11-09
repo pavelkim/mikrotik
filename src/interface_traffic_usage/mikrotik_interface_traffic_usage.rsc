@@ -1,57 +1,53 @@
 #
 # Interface Traffic Usage 
 #
-# Usage example:
+# Installation
+# ============
+#
+# 1. Download the script
 # /tool fetch url="https://github.com/pavelkim/mikrotik/releases/latest/download/mikrotik_interface_traffic_usage.rsc" dst-path="scripts/mikrotik_interface_traffic_usage.rsc"
-# /import scripts/mikrotik_interface_traffic_usage.rsc
-# :global influxDBURL ""
+# 
+# 2. Set your InfluxDB write URL (https)
+# :global influxDBURL "https://influx.db.server:port/endpoint"
+# 
+# 3. Add a scheduled start
 # /system scheduler add interval=5m name=interface_traffic_usage on-event=":global influxDBURL $influxDBURL; /import scripts/mikrotik_interface_traffic_usage.rsc" policy=read,write,policy,test start-time=startup
 #
-# Comment payload example:
-# - {traffic:null}
-# - {traffic: rx=1300 tx=1700 total=3000}
-# - Custom text here {traffic: rx=1300 tx=1700 total=3000}
-# - Custom text here {traffic: rx=1300 tx=1700 total=3000} more custom text
 #
-# Variables:
-# ----------
-# :local influxDBURL "https://influx.db.server:port/endpoint"
+# Results files
+# =============
+#
+# The script stores the last taken mesurements in files named "$resultsFilenameBase_$currentItemName"
+# Contents example:
+# ifname:interfaceName devname:rb9000 rx:100 tx:200 ~
 #
 
 
 :global influxDBURL
 
 :local version DEV
+
+:local resultsFilenameBase "interface_traffic_usage_results"
+:local resultsFilename
+:local resultsContent
+
 :local currentItemName
-:local currentItemComment
-:local currentItemCommentBeforeData
-:local currentItemCommentAfterData
-:local currentItemCommentBytes
-:local currentItemNewComment
-:local currentItemCommentRx
-:local currentItemCommentTx
-:local currentItemCommentTotal
+:local currentItemNewResult
+:local currentItemResultIfname
+:local currentItemResultDevname
+:local currentItemResultRx
+:local currentItemResultTx
 
 :local currentItemNowRx
 :local currentItemNowTx
 :local currentItemNowTotal
 
-:local currentItemDiffRx
-:local currentItemDiffTx
-:local currentItemDiffTotal
-
-:local posDataBegin
-:local posDataEnd
-:local posDataDelimiter
+:local posIfnameDelimiter
+:local posDevnameDelimiter
 :local posRxDelimiter
 :local posTxDelimiter
-:local posTotalDelimiter
-:local posCommentEnd
-
-:local dataPartRx
-:local dataPartTx
-:local dataPartTotal
-:local dataContent
+:local posEOLSymbol
+:local posResultEnd
 
 :local postRequestPayload
 
@@ -67,6 +63,8 @@
 	:local partBeforeDelimiter
 	:local partAfterDelimiter
 
+	:log info message="removeSpaces: Processing '$inputLine'"
+
 	:local i 0
 	:while (  [:tonum [:find "$inputLine" "\_"] ] > 0 and $i < 6 ) do={
 		:set posEnd [:len $inputLine ]
@@ -79,7 +77,7 @@
 
 	}
 
-	:return [:tonum $inputLine]
+	:return $inputLine
 
 }
 
@@ -91,77 +89,83 @@
 	:error "Error: can't read out variable \$influxDBURL. InfluxDB URL not set, exiting."
 }
 
-:foreach itemID in=[/interface find comment~"\\{traffic:.*\\}"] do={
-	:log info message="ITU: processing item $itemID"
 
-	:set currentItemComment [ /interface get $itemID comment ]
+:foreach itemID in=[ /interface find ] do={
+	:log info message="ITU: processing interface number='$itemID'"
+
 	:set currentItemName [ /interface get $itemID name ]
-	:log info message="ITU: Item: $itemID, Name: '$currentItemName', Comment: '$currentItemComment'"
+	:log info message="ITU: Item: $itemID, Name: '$currentItemName'"
 
-	:if ([:find $currentItemComment ":"] != "") do={
-		:log info message="ITU: Item: $itemID Delimiter found, hope syntax is correct"
+	:set resultsFilename "$resultsFilenameBase_$currentItemName"
+	:log info message="ITU: Item: $itemID, results filename: '$resultsFilename'"
 
-		:set posDataBegin [ :find $currentItemComment "{" ]
-		:set posDataEnd [ :find $currentItemComment "}" ]
-		:set posDataDelimiter [ :find $currentItemComment ":" ]
-		:set posRxDelimiter [ :find $currentItemComment ":rx=" ]
-		:set posTxDelimiter [ :find $currentItemComment " tx=" ]
-		:set posTotalDelimiter [ :find $currentItemComment " total=" ]
-		:set posCommentEnd [ :len $currentItemComment ]
+	:log info message="ITU: Item: $itemID, Looking up results file"
 
-		:log info message="ITU: Item: $itemID, posRxDelimiter=$posRxDelimiter posTxDelimiter=$posTxDelimiter posTotalDelimiter=$posTotalDelimiter"
+	if ( [ /file find name="$resultsFilename.txt" ] ) do={
+		:log info message="ITU: Item: $itemID, Found the results file, reading previous values"
 
-		:set currentItemCommentBytes [ :pick $currentItemComment ($posDataDelimiter + 1) ($posDataEnd) ]
-		:set currentItemCommentBeforeData [ :pick $currentItemComment 0 $posDataBegin ]
-		:set currentItemCommentRx [ :pick $currentItemComment ($posRxDelimiter + 4) $posTxDelimiter ]
-		:set currentItemCommentTx [ :pick $currentItemComment ($posTxDelimiter + 4) $posTotalDelimiter ]
-		:set currentItemCommentTotal [ :pick $currentItemComment ($posTotalDelimiter + 7) $posDataEnd ]
-		:set currentItemCommentAfterData [ :pick $currentItemComment ($posDataEnd + 1) $posCommentEnd ]
-		
-		:log info message="ITU: Item: $itemID, Restored Rx: '$currentItemCommentRx'"
-		:log info message="ITU: Item: $itemID, Restored Tx: '$currentItemCommentTx'"
-		:log info message="ITU: Item: $itemID, Restored Total: '$currentItemCommentTotal'"
-		:log info message="ITU: Item: $itemID, Comment before data: '$currentItemCommentBeforeData'"
-		:log info message="ITU: Item: $itemID, Comment after data: '$currentItemCommentAfterData'"
+		:set resultsContent [ /file get $resultsFilename contents ]
+		:log info message="ITU: Item: $itemID, Retrieved result file contents: '$resultsContent'"
+	
+	} else={
+		:log info message="ITU: Item: $itemID, No results file found. No results are going to be analysed."
 
-		:log info message="ITU: Item: $itemID, Getting current counters"
-		:set currentItemNowRx [ $removeSpaces [:tostr [ /interface get number=$itemID rx-byte ] ] ]
-		:set currentItemNowTx [ $removeSpaces [:tostr [ /interface get number=$itemID tx-byte ] ] ]
-		:set currentItemNowTotal ( $currentItemNowRx + $currentItemNowTx ) 
+		:log info message="ITU: Item: $itemID, Preparing empty results file: $resultsFilename"
+		:execute script="{}" file="$resultsFilename"
+		:delay delay-time=0.5
 
-		:log info message="ITU: Item: $itemID, Current counters: rx=$currentItemNowRx tx=$currentItemNowTx total=$currentItemNowTotal"
+	}
 
-		:set dataPartRx "rx=$currentItemNowRx"
-		:set dataPartTx "tx=$currentItemNowTx"
-		:set dataPartTotal "total=$currentItemNowTotal"
-		:set dataContent "{traffic:$dataPartRx $dataPartTx $dataPartTotal}"
+	:log info message="ITU: Item: $itemID, Getting current counters"
+	:set currentItemNowRx [ $removeSpaces [:tostr [ /interface get number=$itemID rx-byte ] ] ]
+	:set currentItemNowTx [ $removeSpaces [:tostr [ /interface get number=$itemID tx-byte ] ] ]
 
-		:set currentItemNewComment ( $currentItemCommentBeforeData . $dataContent . $currentItemCommentAfterData )
-		/interface set numbers=$itemID comment="$currentItemNewComment"
 
-		:if ( $currentItemCommentBytes = "null" ) do={
-			:log info message="ITU: Item: $itemID A first start. Wrote current data instead of 'null'."
+	:log info message="ITU: Item: $itemID, Writing results into a file '$resultsFilename'"
+	:set currentItemNewResult ( "ifname:$currentItemName devname:$deviceIdentity rx:$currentItemNowRx tx:$currentItemNowTx ~" )
+	:log info message="ITU: Item: $itemID, Writing results into a file '$resultsFilename': '$currentItemNewResult'"
+	/file set "$resultsFilename" contents="$currentItemNewResult"
 
-		} else={
+	:if ( [ :find $resultsContent "~" ] >= 0 ) do={
 
-			:if ( $currentItemCommentRx < $currentItemNowRx ) do={
-				:log info message="ITU: Item: $itemID, Looks like counters got reset."
-			}
+		:log info message=( "ITU: Item: $itemID, EOL symbol found, hopefully the syntax is correct")
 
-			:set currentItemDiffRx ( $currentItemNowRx - $currentItemCommentRx )
-			:set currentItemDiffTx ( $currentItemNowTx - $currentItemCommentTx )
-			:set currentItemDiffTotal ( $currentItemNowTotal - $currentItemCommentTotal )
+		# ifname:interfaceName devname:rb9000 rx:100 tx:200 ~" )
 
-			:log info message="ITU: Item: $itemID, Current counters: diff-rx=$currentItemDiffRx diff-tx=$currentItemDiffTx diff-total=$currentItemDiffTotal"
+		:set posIfnameDelimiter [ :find $resultsContent "ifname:" ]
+		:set posDevnameDelimiter [ :find $resultsContent "devname:" ]
+		:set posRxDelimiter [ :find $resultsContent "rx:" ]
+		:set posTxDelimiter [ :find $resultsContent "tx:" ]
+		:set posEOLSymbol [ :find $resultsContent "~" ]
+		:set posResultEnd [ :len $resultsContent ]
 
-			:log info message="ITU: Item: $itemID Updated data and now sending a notification."
-			
-			:set postRequestPayload ( "monitoring,interface=$currentItemName,instance=$deviceIdentity traffic_rx=$currentItemNowRx" . "\n" .  "monitoring,interface=$currentItemName,instance=$deviceIdentity traffic_tx=$currentItemNowTx" )
-			/tool fetch url="$influxDBURL" mode=https keep-result=no check-certificate=no http-method=post http-data="$postRequestPayload"
+		:log info message="ITU: Item: $itemID, posIfnameDelimiter=$posIfnameDelimiter posDevnameDelimiter=$posDevnameDelimiter posRxDelimiter=$posRxDelimiter posTxDelimiter=$posTxDelimiter"
+
+		:set currentItemResultIfname  [ $removeSpaces [ :pick $resultsContent ($posIfnameDelimiter + 7) $posDevnameDelimiter ] ]
+		:set currentItemResultDevname [ $removeSpaces [ :pick $resultsContent ($posDevnameDelimiter + 8) $posRxDelimiter ] ]
+		:set currentItemResultRx [ $removeSpaces [ :pick $resultsContent ($posRxDelimiter + 3) $posTxDelimiter ] ]
+		:set currentItemResultTx [ $removeSpaces [ :pick $resultsContent ($posTxDelimiter + 3) $posEOLSymbol ] ]
+
+		:log info message="ITU: Item: $itemID, Restored ifName: '$currentItemResultIfname'"
+		:log info message="ITU: Item: $itemID, Restored devName: '$currentItemResultDevname'"
+		:log info message="ITU: Item: $itemID, Restored Rx: '$currentItemResultRx'"
+		:log info message="ITU: Item: $itemID, Restored Tx: '$currentItemResultTx'"
+
+	
+
+
+		:if ( $currentItemResultRx > $currentItemNowRx ) do={
+			:log info message="ITU: Item: $itemID, Looks like counters got reset. Rx/Tx bytes showed negative grow."
 		}
+
+		:log info message="ITU: Item: $itemID, Pushing metrics."
+		
+		:set postRequestPayload ( "monitoring,interface=$currentItemName,instance=$deviceIdentity traffic_rx=$currentItemNowRx" . "\n" . "monitoring,interface=$currentItemName,instance=$deviceIdentity traffic_tx=$currentItemNowTx" )
+		/tool fetch url="$influxDBURL" mode="https" keep-result="no" check-certificate="no" http-method="post" http-data="$postRequestPayload"
 
 	}
 
 }
+
 
 :log info message=" *** Interface Traffic Usage FINISH ***"
