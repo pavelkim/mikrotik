@@ -5,7 +5,7 @@
 # ============
 #
 # 1. Download the script
-# /tool fetch url="https://github.com/pavelkim/mikrotik/releases/latest/download/mikrotik_interface_traffic_usage.rsc" dst-path="scripts/mikrotik_interface_traffic_usage.rsc"
+# /tool fetch url="https://pavelkim.github.io/dist/mikrotik/latest/mikrotik_interface_traffic_usage.rsc" dst-path="scripts/mikrotik_interface_traffic_usage.rsc"
 # 
 # 2. Set your InfluxDB write URL (https)
 # :global influxDBURL "https://influx.db.server:port/endpoint"

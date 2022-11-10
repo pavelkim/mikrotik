@@ -5,7 +5,7 @@
 # User should be created before running this script.
 #
 # Usage example:
-# /tool fetch url="https://github.com/pavelkim/mikrotik/releases/latest/download/mikrotik_install_rsa_keys.rsc" dst-path="scripts/mikrotik_install_rsa_keys.rsc"
+# /tool fetch url="https://pavelkim.github.io/dist/mikrotik/latest/mikrotik_install_rsa_keys.rsc" dst-path="scripts/mikrotik_install_rsa_keys.rsc"
 # /import scripts/mikrotik_install_rsa_keys.rsc
 # /user ssh-keys print
 #

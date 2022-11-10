@@ -214,8 +214,9 @@ jobs:
           SSH_DIR="${HOME}/.ssh"
           PRIVATE_KEY_FILENAME="${SSH_DIR}/id_ecdsa"
           REPO_CLONE_PATH="${PWD}/repo"
-          REPO_DIST_PATH="${REPO_CLONE_PATH}/dist"
-          REPO_VERSIONED_PATH="${REPO_DIST_PATH}/mikrotik/${{ env.PLANNED_VERSION }}"
+          REPO_DIST_PATH="${REPO_CLONE_PATH}/dist/mikrotik"
+          REPO_VERSIONED_PATH="${REPO_DIST_PATH}/${{ env.PLANNED_VERSION }}"
+          REPO_LATEST_PATH="${REPO_DIST_PATH}/mikrotik/latest"
           
           mkdir -pv "${SSH_DIR}"
           echo "${{ secrets.PAVELKIM_GITHUB_IO_ID_ECDSA }}" >> "${PRIVATE_KEY_FILENAME}"
@@ -231,6 +232,9 @@ jobs:
           cp -v ./build/mikrotik_install_rsa_keys.rsc "${REPO_VERSIONED_PATH}/mikrotik_install_rsa_keys.rsc"
           cp -v ./build/mikrotik_interface_traffic_usage.rsc "${REPO_VERSIONED_PATH}/mikrotik_interface_traffic_usage.rsc"
           cp -v ./build/mikrotik_health_exporter.rsc "${REPO_VERSIONED_PATH}/mikrotik_health_exporter.rsc"
+
+          cd "${REPO_DIST_PATH}"
+          ln -sf "${{ env.PLANNED_VERSION }}" "latest"
 
           git -C "${REPO_CLONE_PATH}" add "${REPO_VERSIONED_PATH}"
           git -C "${REPO_CLONE_PATH}" commit -m "[Change] MikroTik scripts release ${{ env.PLANNED_VERSION }}"

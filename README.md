@@ -19,7 +19,7 @@ monitoring_traffic_tx
 #### Download the script
 
 ```bash
-/tool fetch url="https://github.com/pavelkim/mikrotik/releases/latest/download/mikrotik_interface_traffic_usage.rsc" dst-path="scripts/mikrotik_interface_traffic_usage.rsc"
+/tool fetch url="https://pavelkim.github.io/dist/mikrotik/latest/mikrotik_interface_traffic_usage.rsc" dst-path="scripts/mikrotik_interface_traffic_usage.rsc"
 ```
 
 #### Set your InfluxDB write URL
@@ -45,7 +45,7 @@ Check the scheduler:
 
 ```bash
 
-[pavelkim@rb-rtcomm0] > /tool fetch url="https://github.com/pavelkim/mikrotik/releases/latest/download/mikrotik_interface_traffic_usage.rsc" dst-path="scripts/mikrotik_interface_traffic_usage.rsc"
+[pavelkim@rb-rtcomm0] > /tool fetch url="https://pavelkim.github.io/dist/mikrotik/latest/mikrotik_interface_traffic_usage.rsc" dst-path="scripts/mikrotik_interface_traffic_usage.rsc"
       status: finished
   downloaded: 6KiBC-z pause]
        total: 6KiB
@@ -99,7 +99,7 @@ monitoring_deviceCPULoad
 #### Download the script
 
 ```bash
-/tool fetch url="https://github.com/pavelkim/mikrotik/releases/latest/download/mikrotik_health_exporter.rsc" dst-path="scripts/mikrotik_health_exporter.rsc"
+/tool fetch url="https://pavelkim.github.io/dist/mikrotik/latest/mikrotik_health_exporter.rsc" dst-path="scripts/mikrotik_health_exporter.rsc"
 ```
 
 #### Set your InfluxDB write URL
@@ -125,7 +125,7 @@ Check the scheduler:
 
 ```bash
 
-[pavelkim@rb-rtcomm0] > /tool fetch url="https://github.com/pavelkim/mikrotik/releases/latest/download/mikrotik_health_exporter.rsc" dst-path="scripts/mikrotik_health_exporter.rsc"
+[pavelkim@rb-rtcomm0] > /tool fetch url="https://pavelkim.github.io/dist/mikrotik/latest/mikrotik_health_exporter.rsc" dst-path="scripts/mikrotik_health_exporter.rsc"
       status: finished
   downloaded: 6KiBC-z pause]
        total: 6KiB
@@ -183,7 +183,7 @@ Define key URLs for each user you need to set up:
 
 Download the script:
 ```
-/tool fetch url="https://github.com/pavelkim/mikrotik/releases/latest/download/mikrotik_install_rsa_keys.rsc" dst-path="scripts/mikrotik_install_rsa_keys.rsc"
+/tool fetch url="https://pavelkim.github.io/dist/mikrotik/latest/mikrotik_install_rsa_keys.rsc" dst-path="scripts/mikrotik_install_rsa_keys.rsc"
 ```
 
 Run the script to provision the keys for the users:
