@@ -137,14 +137,14 @@ jobs:
           curl --request POST --url https://api.github.com/repos/${{ github.repository }}/git/tags \
           -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
           -H 'content-type: application/json' \
-          --data '{"tag": "${env.PLANNED_VERSION}",
+          --data '{"tag": "${{ env.PLANNED_VERSION }}",
             "message": "Pipeline build tag",
             "object": "${{ github.sha }}",
             "type": "commit",
             "tagger": {
               "name": "Alice from Wonderland",
               "email": "noreply@localhost.localdomain",
-              "date": "${{steps.timestamp.outputs.timestamp}}"
+              "date": "$( date "+%FT%TZ" )"
             }'
 
       - name: Create a Release
@@ -214,7 +214,7 @@ jobs:
           PRIVATE_KEY_FILENAME="~/.ssh/id_ecdsa"
           REPO_CLONE_PATH="${PWD}/repo"
           REPO_DIST_PATH="${REPO_CLONE_PATH}/dist"
-          REPO_VERSIONED_PATH="${REPO_DIST_PATH}/${env.PLANNED_VERSION}"
+          REPO_VERSIONED_PATH="${REPO_DIST_PATH}/${{ env.PLANNED_VERSION }}"
           
           echo "${{ secrets.PAVELKIM_GITHUB_IO_ID_ECDSA }}" >> "${PRIVATE_KEY_FILENAME}"
 
