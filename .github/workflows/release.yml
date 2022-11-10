@@ -241,7 +241,12 @@ jobs:
           ln -sfn "${{ env.PLANNED_VERSION }}" "latest"
           ls -la
 
-          if ! git -C "${REPO_CLONE_PATH}" diff-index --quiet HEAD --; then
+          REPO_CHANGES=$( git -C "${REPO_CLONE_PATH}" status --porcelain | wc -l )
+          
+          # My best guess on how to cast to int:
+          REPO_CHANGES_COUNT=$(( REPO_CHANGES + 0 ))
+
+          if [[ "${REPO_CHANGES_COUNT}" -gt 0 ]]; then
 
             git -C "${REPO_CLONE_PATH}" diff-index HEAD
 
