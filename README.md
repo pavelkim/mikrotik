@@ -91,7 +91,7 @@ monitoring_deviceCPULoad
 ![Mikrotik CPU Load](/doc/mikrotik_health_exporter_cpu.png?raw=true "Grafana — Mikrotik CPU Load")
 
 
-![Mikrotik Memory Usage](/doc/mikrotik_health_exporter_cpu.png?raw=true "Grafana — Mikrotik Memory Usage")
+![Mikrotik Memory Usage](/doc/mikrotik_health_exporter_mem.png?raw=true "Grafana — Mikrotik Memory Usage")
 
 
 ### Installation
