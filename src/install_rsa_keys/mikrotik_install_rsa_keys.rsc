@@ -11,18 +11,21 @@
 #
 # Variables:
 # ----------
-# :local influxDBURL "https://influx.db.server:port/endpoint"
+# :global keys { "username"=( "url", "url" ) }
 #
 
 
-:local keys { 
-		"username"=( "https://url.to/your/rsa.key", "https://url.to/your/second.rsa.key" )
-}
 :local keyFilePath
 :local keyFileID 0
+:local retryAttemptsLimit 10
+:local retryAttempts 1
 :local version DEV
 
 :log info message="Start importing RSA Keys (v$version)."
+
+:if ([:tostr [:typeof $keys ]] = "nothing" ) do={
+	:error "Error: can't read out variable \$keys. Keys and users are not set, exiting."
+}
 
 foreach accountName,keyURLList in=$keys do={
 	:log info message="Processing keys for account '$accountName'"
@@ -41,8 +44,9 @@ foreach accountName,keyURLList in=$keys do={
 			
 			:do {
 				:log info message="File isn't ready yet. Waiting until file '$keyFilePath' appears"
-				:delay delay-time=0.5s
-			} while=( [ /file find name="$keyFilePath" ] = "" );
+				:delay delay-time=0.5
+				:set retryAttempts ( $retryAttempts + 1 )
+			} while ( [ /file find name="$keyFilePath" ] = "" ) && ( $retryAttempts < $retryAttemptsLimit );
 
 		} on-error={
 			:log error message="Couldn't download or save RSA Key. File: '$keyFilePath', URL: '$keyURL'"
