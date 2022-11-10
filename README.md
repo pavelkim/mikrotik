@@ -1,6 +1,6 @@
 # MikroTik scripts
 
-## Mikrotik Interface Traffic Usage
+## MikroTik Interface Traffic Usage
 
 Counts rx, tx and total transferred bytes on network interfaces and pushes metrics into InfluxDB.
 The script stores the last taken mesurements in files named "$resultsFilenameBase_$interfaceName"
@@ -11,7 +11,7 @@ monitoring_traffic_rx
 monitoring_traffic_tx
 ```
 
-![Mikrotik Interface Traffic Usage](/doc/mikrotik_interface_traffic_usage.png?raw=true "Grafana — Mikrotik Interface Traffic")
+![MikroTik Interface Traffic Usage](/doc/mikrotik_interface_traffic_usage.png?raw=true "Grafana — MikroTik Interface Traffic")
 
 
 ### Installation
@@ -70,7 +70,7 @@ Flags: X - disabled
 2
 ```
 
-## Mikrotik Health Exporter
+## MikroTik Health Exporter
 
 Reads CPU, disk and memory metrics, and pushes them into InfluxDB.
 Some of the metrics may not be supported by your router and will be skipped.
@@ -88,10 +88,10 @@ monitoring_deviceDiskWriteSectTotal
 monitoring_deviceCPULoad
 ```
 
-![Mikrotik CPU Load](/doc/mikrotik_health_exporter_cpu.png?raw=true "Grafana — Mikrotik CPU Load")
+![MikroTik CPU Load](/doc/mikrotik_health_exporter_cpu.png?raw=true "Grafana — MikroTik CPU Load")
 
 
-![Mikrotik Memory Usage](/doc/mikrotik_health_exporter_mem.png?raw=true "Grafana — Mikrotik Memory Usage")
+![MikroTik Memory Usage](/doc/mikrotik_health_exporter_mem.png?raw=true "Grafana — MikroTik Memory Usage")
 
 
 ### Installation
@@ -150,9 +150,9 @@ Flags: X - disabled
 2
 ```
 
-## Mikrotik RSA Key Provisioning
+## MikroTik RSA Key Provisioning
 
-Provisions public RSA keys to your mikrotik router.
+Provisions public RSA keys to your MikroTik router.
 
 ### Prepare your keys
 
@@ -175,7 +175,7 @@ Example in pastebin: https://pastebin.com/raw/w69viks1
 ### Define variables
 
 Define key URLs for each user you need to set up:
-```mikrotik
+```
 :global keys { "username"=( "https://pastebin.com/raw/w69viks1", "https://pastebin.com/raw/636SeR6d" ) }
 ```
 
