@@ -11,6 +11,9 @@ monitoring_traffic_rx
 monitoring_traffic_tx
 ```
 
+![Mikrotik Interface Traffic Usage](/doc/mikrotik_interface_traffic_usage.png?raw=true "Grafana — Mikrotik Interface Traffic")
+
+
 ### Installation
 
 #### Download the script
@@ -70,6 +73,7 @@ Flags: X - disabled
 ## Mikrotik Health Exporter
 
 Reads CPU, disk and memory metrics, and pushes them into InfluxDB.
+Some of the metrics may not be supported by your router and will be skipped.
 
 List of generated metrics:
 ```
@@ -83,6 +87,12 @@ monitoring_deviceDiskWriteSectSinceReboot
 monitoring_deviceDiskWriteSectTotal
 monitoring_deviceCPULoad
 ```
+
+![Mikrotik CPU Load](/doc/mikrotik_health_exporter_cpu.png?raw=true "Grafana — Mikrotik CPU Load")
+
+
+![Mikrotik Memory Usage](/doc/mikrotik_health_exporter_cpu.png?raw=true "Grafana — Mikrotik Memory Usage")
+
 
 ### Installation
 
