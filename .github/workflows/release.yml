@@ -241,7 +241,7 @@ jobs:
           ln -sfn "${{ env.PLANNED_VERSION }}" "latest"
           ls -la
 
-          if ! git diff-index --quiet HEAD --; then
+          if ! git -C "${REPO_CLONE_PATH}" diff-index --quiet HEAD --; then
 
             git -C "${REPO_CLONE_PATH}" add "${REPO_DIST_PATH}"
             git -C "${REPO_CLONE_PATH}" commit -m "[Change] MikroTik scripts release ${{ env.PLANNED_VERSION }}"
