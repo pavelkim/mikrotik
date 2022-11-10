@@ -211,11 +211,13 @@ jobs:
         shell: bash
         run: |
 
-          PRIVATE_KEY_FILENAME="~/.ssh/id_ecdsa"
+          SSH_DIR="${HOME}/.ssh"
+          PRIVATE_KEY_FILENAME="${SSH_DIR}/id_ecdsa"
           REPO_CLONE_PATH="${PWD}/repo"
           REPO_DIST_PATH="${REPO_CLONE_PATH}/dist"
           REPO_VERSIONED_PATH="${REPO_DIST_PATH}/${{ env.PLANNED_VERSION }}"
           
+          mkdir -pv "${SSH_DIR}"
           echo "${{ secrets.PAVELKIM_GITHUB_IO_ID_ECDSA }}" >> "${PRIVATE_KEY_FILENAME}"
 
           mkdir -pv "${REPO_CLONE_PATH}"
