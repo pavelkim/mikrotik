@@ -5,6 +5,8 @@
 Counts rx, tx and total transferred bytes on network interfaces and pushes metrics into InfluxDB.
 The script stores the last taken mesurements in files named "$resultsFilenameBase_$interfaceName"
 
+Latest version: https://pavelkim.github.io/dist/mikrotik/latest/mikrotik_interface_traffic_usage.rsc
+
 List of generated metrics:
 ```
 monitoring_traffic_rx
@@ -74,6 +76,8 @@ Flags: X - disabled
 
 Reads CPU, disk and memory metrics, and pushes them into InfluxDB.
 Some of the metrics may not be supported by your router and will be skipped.
+
+Latest version: https://pavelkim.github.io/dist/mikrotik/latest/mikrotik_health_exporter.rsc
 
 List of generated metrics:
 ```
@@ -153,6 +157,8 @@ Flags: X - disabled
 ## MikroTik RSA Key Provisioning
 
 Provisions public RSA keys to your MikroTik router.
+
+Latest version: https://pavelkim.github.io/dist/mikrotik/latest/mikrotik_install_rsa_keys.rsc
 
 ### Prepare your keys
 
