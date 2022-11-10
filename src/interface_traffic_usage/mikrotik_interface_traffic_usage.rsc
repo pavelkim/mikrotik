@@ -151,8 +151,6 @@
 		:log info message="ITU: Item: $itemID, Restored Rx: '$currentItemResultRx'"
 		:log info message="ITU: Item: $itemID, Restored Tx: '$currentItemResultTx'"
 
-	
-
 
 		:if ( $currentItemResultRx > $currentItemNowRx ) do={
 			:log info message="ITU: Item: $itemID, Looks like counters got reset. Rx/Tx bytes showed negative grow."
