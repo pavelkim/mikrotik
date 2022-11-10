@@ -235,6 +235,7 @@ jobs:
 
           cd "${REPO_DIST_PATH}"
           ln -sf "${{ env.PLANNED_VERSION }}" "latest"
+          ls -la
 
           git -C "${REPO_CLONE_PATH}" add "${REPO_DIST_PATH}"
           git -C "${REPO_CLONE_PATH}" commit -m "[Change] MikroTik scripts release ${{ env.PLANNED_VERSION }}"
