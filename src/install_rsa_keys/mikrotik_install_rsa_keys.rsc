@@ -14,6 +14,7 @@
 # :global keys { "username"=( "url", "url" ) }
 #
 
+:global keys
 
 :local keyFilePath
 :local keyFileID 0
@@ -46,7 +47,7 @@ foreach accountName,keyURLList in=$keys do={
 				:log info message="File isn't ready yet. Waiting until file '$keyFilePath' appears"
 				:delay delay-time=0.5
 				:set retryAttempts ( $retryAttempts + 1 )
-			} while ( [ /file find name="$keyFilePath" ] = "" ) && ( $retryAttempts < $retryAttemptsLimit );
+			} while=(( [ /file find name="$keyFilePath" ] = "" ) && ( $retryAttempts < $retryAttemptsLimit ));
 
 		} on-error={
 			:log error message="Couldn't download or save RSA Key. File: '$keyFilePath', URL: '$keyURL'"
