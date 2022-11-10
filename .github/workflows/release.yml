@@ -230,7 +230,7 @@ jobs:
           cp -v ./build/mikrotik_health_exporter.rsc "${REPO_VERSIONED_PATH}/mikrotik_health_exporter.rsc"
 
           git -C "${REPO_CLONE_PATH}" add "${REPO_VERSIONED_PATH}"
-          git -C "${REPO_CLONE_PATH}" commit -m "[Change] MikroTik scripts release ${env.PLANNED_VERSION} (GitHub Actions)"
+          git -C "${REPO_CLONE_PATH}" commit -m "[Change] MikroTik scripts release ${{ env.PLANNED_VERSION }} (GitHub Actions)"
           git -C "${REPO_CLONE_PATH}" push origin master
 
 
