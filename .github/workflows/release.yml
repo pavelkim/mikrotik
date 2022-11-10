@@ -1,4 +1,8 @@
 ---
+# yamllint disable rule:line-length
+# yamllint disable rule:truthy
+# yamllint disable rule:brackets
+
 name: Everything
 
 on:
@@ -217,7 +221,7 @@ jobs:
           REPO_DIST_PATH="${REPO_CLONE_PATH}/dist/mikrotik"
           REPO_VERSIONED_PATH="${REPO_DIST_PATH}/${{ env.PLANNED_VERSION }}"
           REPO_LATEST_PATH="${REPO_DIST_PATH}/mikrotik/latest"
-          
+
           mkdir -pv "${SSH_DIR}"
           echo "${{ secrets.PAVELKIM_GITHUB_IO_ID_ECDSA }}" >> "${PRIVATE_KEY_FILENAME}"
           chmod 600 "${PRIVATE_KEY_FILENAME}"
@@ -235,10 +239,18 @@ jobs:
 
           cd "${REPO_DIST_PATH}"
           ln -sfn "${{ env.PLANNED_VERSION }}" "latest"
+          ls -la
 
-          git -C "${REPO_CLONE_PATH}" add "${REPO_DIST_PATH}"
-          git -C "${REPO_CLONE_PATH}" commit -m "[Change] MikroTik scripts release ${{ env.PLANNED_VERSION }}"
-          git -C "${REPO_CLONE_PATH}" push origin master
+          if ! git diff-index --quiet HEAD --; then
 
+            git -C "${REPO_CLONE_PATH}" add "${REPO_DIST_PATH}"
+            git -C "${REPO_CLONE_PATH}" commit -m "[Change] MikroTik scripts release ${{ env.PLANNED_VERSION }}"
+            git -C "${REPO_CLONE_PATH}" push origin master
+
+          else
+
+            echo "No changes to commit"
+
+          fi
 
 ...
