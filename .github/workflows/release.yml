@@ -219,6 +219,7 @@ jobs:
           
           mkdir -pv "${SSH_DIR}"
           echo "${{ secrets.PAVELKIM_GITHUB_IO_ID_ECDSA }}" >> "${PRIVATE_KEY_FILENAME}"
+          chmod 600 "${PRIVATE_KEY_FILENAME}"
 
           mkdir -pv "${REPO_CLONE_PATH}"
           git clone "${{ secrets.PAVELKIM_GITHUB_IO_REPO_URL }}" "${REPO_CLONE_PATH}"
