@@ -205,4 +205,30 @@ jobs:
           asset_name: mikrotik_install_rsa_keys.rsc
           asset_content_type: application/octet-stream
 
+
+      - name: Upload assets to pavelkim.github.io
+        id: upload_to_pavelkim_github_io
+        shell: bash
+        run: |
+
+          PRIVATE_KEY_FILENAME="~/.ssh/id_ecdsa"
+          REPO_CLONE_PATH="${PWD}/repo"
+          REPO_DIST_PATH="${REPO_CLONE_PATH}/dist"
+          REPO_VERSIONED_PATH="${REPO_DIST_PATH}/${env.PLANNED_VERSION}"
+          
+          echo "${{ secrets.PAVELKIM_GITHUB_IO_ID_ECDSA }}" >> "${PRIVATE_KEY_FILENAME}"
+
+          mkdir -pv "${REPO_CLONE_PATH}"
+          git clone "${{ secrets.PAVELKIM_GITHUB_IO_REPO_URL }}" "${REPO_CLONE_PATH}"
+
+          mkdir -pv "${REPO_VERSIONED_PATH}"
+          cp -v ./build/mikrotik_install_rsa_keys.rsc "${REPO_VERSIONED_PATH}/mikrotik_install_rsa_keys.rsc"
+          cp -v ./build/mikrotik_interface_traffic_usage.rsc "${REPO_VERSIONED_PATH}/mikrotik_interface_traffic_usage.rsc"
+          cp -v ./build/mikrotik_health_exporter.rsc "${REPO_VERSIONED_PATH}/mikrotik_health_exporter.rsc"
+
+          git -C "${REPO_CLONE_PATH}" add "${REPO_VERSIONED_PATH}"
+          git -C "${REPO_CLONE_PATH}" commit -m "[Change] MikroTik scripts release ${env.PLANNED_VERSION} (GitHub Actions)"
+          git -C "${REPO_CLONE_PATH}" push origin master
+
+
 ...
