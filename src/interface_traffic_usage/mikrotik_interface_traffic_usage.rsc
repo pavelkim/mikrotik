@@ -112,7 +112,7 @@
 
 		:log info message="ITU: Item: $itemID, Preparing empty results file: $resultsFilename"
 		:execute script="{}" file="$resultsFilename.txt"
-		:delay delay-time=0.5
+		:delay delay-time=1.0
 
 	}
 
