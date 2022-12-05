@@ -63,7 +63,7 @@
 	:local partBeforeDelimiter
 	:local partAfterDelimiter
 
-	:log info message="removeSpaces: Processing '$inputLine'"
+	:log debug message="removeSpaces: Processing '$inputLine'"
 
 	:local i 0
 	:while (  [:tonum [:find "$inputLine" "\_"] ] > 0 and $i < 6 ) do={
@@ -101,17 +101,17 @@
 
 	:log info message="ITU: Item: $itemID, Looking up results file"
 
-	if ( [:tobool [ /file find name="$resultsFilename.txt" ] ] ) do={
+	if ( [:len [ /file find name="$resultsFilename.txt" ] ] > 0 ) do={
 		:log info message="ITU: Item: $itemID, Found the results file, reading previous values"
 
-		:set resultsContent [ /file get $resultsFilename contents ]
+		:set resultsContent [ /file get "$resultsFilename.txt" contents ]
 		:log info message="ITU: Item: $itemID, Retrieved result file contents: '$resultsContent'"
 	
 	} else={
 		:log info message="ITU: Item: $itemID, No results file found. No results are going to be analysed."
 
 		:log info message="ITU: Item: $itemID, Preparing empty results file: $resultsFilename"
-		:execute script="{}" file="$resultsFilename"
+		:execute script="{}" file="$resultsFilename.txt"
 		:delay delay-time=0.5
 
 	}
@@ -124,7 +124,7 @@
 	:log info message="ITU: Item: $itemID, Writing results into a file '$resultsFilename'"
 	:set currentItemNewResult ( "ifname:$currentItemName devname:$deviceIdentity rx:$currentItemNowRx tx:$currentItemNowTx ~" )
 	:log info message="ITU: Item: $itemID, Writing results into a file '$resultsFilename': '$currentItemNewResult'"
-	/file set "$resultsFilename" contents="$currentItemNewResult"
+	/file set "$resultsFilename.txt" contents="$currentItemNewResult"
 
 	:if ( [ :find $resultsContent "~" ] >= 0 ) do={
 
@@ -162,6 +162,8 @@
 		/tool fetch url="$influxDBURL" mode="https" keep-result="no" check-certificate="no" http-method="post" http-data="$postRequestPayload"
 
 	}
+
+	:log info message="ITU: Finished processing interface number='$itemID'"
 
 }
 
