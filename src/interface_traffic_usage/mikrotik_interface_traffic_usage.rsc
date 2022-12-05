@@ -101,7 +101,7 @@
 
 	:log info message="ITU: Item: $itemID, Looking up results file"
 
-	if ( [ /file find name="$resultsFilename.txt" ] ) do={
+	if ( [:tobool [ /file find name="$resultsFilename.txt" ] ] ) do={
 		:log info message="ITU: Item: $itemID, Found the results file, reading previous values"
 
 		:set resultsContent [ /file get $resultsFilename contents ]

@@ -1,18 +1,19 @@
 #
 # Health Monitoring
 #
-# Usage example:
-# --------------
+# Installation
+# ============
+#
+# 1. Download the script
 # /tool fetch url="https://pavelkim.github.io/dist/mikrotik/latest/mikrotik_health_exporter.rsc" dst-path="scripts/mikrotik_health_exporter.rsc"
-# /import scripts/mikrotik_health_exporter.rsc
-# :global influxDBURL ""
+# 
+# 2. Set your InfluxDB write URL (https)
+# :global influxDBURL "https://influx.db.server:port/endpoint"
+# 
+# 3. Add a scheduled start
 # /system scheduler add interval=1m name=mikrotik_health_exporter on-event=":global influxDBURL $influxDBURL; /import scripts/mikrotik_health_exporter.rsc" policy=read,test start-time=startup
 #
-# Variables:
-# ----------
-# :local influxDBURL "https://influx.db.server:port/endpoint"
 #
-
 
 :global influxDBURL
 
