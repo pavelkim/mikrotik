@@ -112,7 +112,7 @@
 
 		:log info message="ITU: Item: $itemID, Preparing empty results file: $resultsFilename"
 		:execute script="{}" file="$resultsFilename.txt"
-		:delay delay-time=1.0
+		:delay delay-time=2.0
 
 	}
 
@@ -158,7 +158,7 @@
 
 		:log info message="ITU: Item: $itemID, Pushing metrics."
 		
-		:set postRequestPayload ( "monitoring,interface=$currentItemName,instance=$deviceIdentity traffic_rx=$currentItemNowRx" . "\n" . "monitoring,interface=$currentItemName,instance=$deviceIdentity traffic_tx=$currentItemNowTx" )
+		:set postRequestPayload ( "mikrotik_monitoring,interface=$currentItemName,instance=$deviceIdentity traffic_rx=$currentItemNowRx" . "\n" . "mikrotik_monitoring,interface=$currentItemName,instance=$deviceIdentity traffic_tx=$currentItemNowTx" )
 		/tool fetch url="$influxDBURL" mode="https" keep-result="no" check-certificate="no" http-method="post" http-data="$postRequestPayload"
 
 	}

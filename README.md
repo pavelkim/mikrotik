@@ -9,8 +9,8 @@ Latest version: https://pavelkim.github.io/dist/mikrotik/latest/mikrotik_interfa
 
 List of generated metrics:
 ```
-monitoring_traffic_rx
-monitoring_traffic_tx
+mikrotik_monitoring_traffic_rx
+mikrotik_monitoring_traffic_tx
 ```
 
 ![MikroTik Interface Traffic Usage](/doc/mikrotik_interface_traffic_usage.png?raw=true "Grafana — MikroTik Interface Traffic")
@@ -81,15 +81,15 @@ Latest version: https://pavelkim.github.io/dist/mikrotik/latest/mikrotik_health_
 
 List of generated metrics:
 ```
-monitoring_deviceTemperature
-monitoring_deviceMemFree
-monitoring_deviceMemTotal
-monitoring_deviceDiskFree
-monitoring_deviceDiskTotal
-monitoring_deviceDiskBadBlocks
-monitoring_deviceDiskWriteSectSinceReboot
-monitoring_deviceDiskWriteSectTotal
-monitoring_deviceCPULoad
+mikrotik_monitoring_deviceTemperature
+mikrotik_monitoring_deviceMemFree
+mikrotik_monitoring_deviceMemTotal
+mikrotik_monitoring_deviceDiskFree
+mikrotik_monitoring_deviceDiskTotal
+mikrotik_monitoring_deviceDiskBadBlocks
+mikrotik_monitoring_deviceDiskWriteSectSinceReboot
+mikrotik_monitoring_deviceDiskWriteSectTotal
+mikrotik_monitoring_deviceCPULoad
 ```
 
 ![MikroTik CPU Load](/doc/mikrotik_health_exporter_cpu.png?raw=true "Grafana — MikroTik CPU Load")

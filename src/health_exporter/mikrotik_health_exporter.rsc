@@ -78,7 +78,7 @@
 :foreach postRequestPayloadPartName,postRequestPayloadPart in=$postRequestPayloadParts do={
 
 	:if ( [:len ($postRequestPayloadParts->"$postRequestPayloadPartName") ] > 0 ) do={
-		:set currentPostRequestPayloadPart ("monitoring,instance=$deviceIdentity" . " " . $postRequestPayloadPartName . "=" . $postRequestPayloadParts->"$postRequestPayloadPartName")
+		:set currentPostRequestPayloadPart ("mikrotik_monitoring,instance=$deviceIdentity" . " " . $postRequestPayloadPartName . "=" . $postRequestPayloadParts->"$postRequestPayloadPartName")
 		:set postRequestPayload ( "$currentPostRequestPayloadPart" . "\n" . "$postRequestPayload" )
 	
 	} else={
